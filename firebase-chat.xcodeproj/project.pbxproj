@@ -14,6 +14,8 @@
 		52B39BF11FF36ACB002E51BC /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 52B39BEF1FF36ACB002E51BC /* LaunchScreen.storyboard */; };
 		52B39BFA1FF36FFE002E51BC /* LoginController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52B39BF91FF36FFE002E51BC /* LoginController.swift */; };
 		52B39BFC1FF38F8A002E51BC /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 52B39BFB1FF38F8A002E51BC /* GoogleService-Info.plist */; };
+		52B39BFE1FF3D957002E51BC /* NewMessageController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52B39BFD1FF3D957002E51BC /* NewMessageController.swift */; };
+		52B39C011FF3DD7A002E51BC /* ChatUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52B39C001FF3DD7A002E51BC /* ChatUser.swift */; };
 		685E658F508E668D5F6FD67C /* Pods_firebase_chat.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DE0025D3571588D81CBA0331 /* Pods_firebase_chat.framework */; };
 /* End PBXBuildFile section */
 
@@ -27,6 +29,8 @@
 		52B39BF21FF36ACB002E51BC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		52B39BF91FF36FFE002E51BC /* LoginController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginController.swift; sourceTree = "<group>"; };
 		52B39BFB1FF38F8A002E51BC /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		52B39BFD1FF3D957002E51BC /* NewMessageController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewMessageController.swift; sourceTree = "<group>"; };
+		52B39C001FF3DD7A002E51BC /* ChatUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatUser.swift; sourceTree = "<group>"; };
 		5FB10F301C5370850967DF4E /* Pods-firebase-chat.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-firebase-chat.release.xcconfig"; path = "Pods/Target Support Files/Pods-firebase-chat/Pods-firebase-chat.release.xcconfig"; sourceTree = "<group>"; };
 		BDFF4B12524C677424AA4810 /* Pods-firebase-chat.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-firebase-chat.debug.xcconfig"; path = "Pods/Target Support Files/Pods-firebase-chat/Pods-firebase-chat.debug.xcconfig"; sourceTree = "<group>"; };
 		DE0025D3571588D81CBA0331 /* Pods_firebase_chat.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_firebase_chat.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -65,6 +69,7 @@
 		52B39BE51FF36ACB002E51BC /* firebase-chat */ = {
 			isa = PBXGroup;
 			children = (
+				52B39BFF1FF3DD64002E51BC /* Model */,
 				52B39BF81FF36FCB002E51BC /* Controller */,
 				52B39BE61FF36ACB002E51BC /* AppDelegate.swift */,
 				52B39BEA1FF36ACB002E51BC /* Main.storyboard */,
@@ -81,8 +86,17 @@
 			children = (
 				52B39BE81FF36ACB002E51BC /* MessagesViewController.swift */,
 				52B39BF91FF36FFE002E51BC /* LoginController.swift */,
+				52B39BFD1FF3D957002E51BC /* NewMessageController.swift */,
 			);
 			path = Controller;
+			sourceTree = "<group>";
+		};
+		52B39BFF1FF3DD64002E51BC /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				52B39C001FF3DD7A002E51BC /* ChatUser.swift */,
+			);
+			path = Model;
 			sourceTree = "<group>";
 		};
 		DEB62F94D69A62D4ECF62F97 /* Pods */ = {
@@ -238,8 +252,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				52B39BFE1FF3D957002E51BC /* NewMessageController.swift in Sources */,
 				52B39BE91FF36ACB002E51BC /* MessagesViewController.swift in Sources */,
 				52B39BFA1FF36FFE002E51BC /* LoginController.swift in Sources */,
+				52B39C011FF3DD7A002E51BC /* ChatUser.swift in Sources */,
 				52B39BE71FF36ACB002E51BC /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
