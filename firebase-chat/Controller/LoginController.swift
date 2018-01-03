@@ -13,6 +13,7 @@ import FirebaseDatabase
 class LoginController: UIViewController {
     
     var ref: DatabaseReference!
+    var messagesController: MessagesViewController?
     
     //MARK:- InputsContainerView
     var inputsContainerViewHeightAnchor: NSLayoutConstraint?
@@ -61,40 +62,13 @@ class LoginController: UIViewController {
                 return
             }
             
+            self.messagesController?.fetchUserAndSetNavBarTitle()
+            
             self.dismiss(animated: true, completion: nil)
         }
     }
     
-    func handleRegister() {
-        guard let email = emailTextField.text, let password = passwordTextField.text, let username = nameTextField.text else {
-            print("form invalid")
-            return
-        }
-        
-        Auth.auth().createUser(withEmail: email, password: password) { (user, error) in
-            if error != nil {
-                print("Error: \(String(describing: error))")
-                return
-            }
-            
-            guard let uid = user?.uid else {
-                return
-            }
-            
-            // successfully authenticated user
-            self.ref = Database.database().reference()
-            let usersReference = self.ref.child("users").child(uid)
-            let values = ["name": username, "email": email]
-            usersReference.updateChildValues(values, withCompletionBlock: { (err, ref) in
-                if err != nil {
-                    print("Error: \(String(describing: err))")
-                    return
-                }
-                
-                self.dismiss(animated: true, completion: nil)
-            })
-        }
-    }
+    
     
     //MARK:- NameTextField
     var nameTextFieldHeightAnchor: NSLayoutConstraint?
@@ -144,13 +118,17 @@ class LoginController: UIViewController {
     }()
     
     // profile image view
-    let profileImageView: UIImageView = {
+    lazy var profileImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.image = UIImage(named: "firebase_splash")
         imageView.contentMode = .scaleAspectFill
         imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleSelectProfileImageView)))
+        imageView.isUserInteractionEnabled = true
         return imageView
     }()
+    
+    
     
     //MARK:- UISegmentedControl
     
