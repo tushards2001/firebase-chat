@@ -10,9 +10,9 @@ import UIKit
 import FirebaseAuth
 import FirebaseDatabase
 
-class MessagesViewController: UITableViewController {
+class MessagesViewController: UITableViewController, UIGestureRecognizerDelegate {
     
-    var ref: DatabaseReference!
+    let cellId = "cellId"
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -25,7 +25,62 @@ class MessagesViewController: UITableViewController {
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .edit, target: self, action: #selector(handleNewMessage))
         
         checkIfUserIsLoggedIn()
+        
+        tableView.register(UserCell.self, forCellReuseIdentifier: cellId)
     }
+    
+    var messages = [Message]()
+    var messagesDictionary = [String: Message]()
+    
+    func observeUserMessages() {
+        guard let uid = Auth.auth().currentUser?.uid else {
+            return
+        }
+        
+        let ref = Database.database().reference().child("user-messages").child(uid)
+        
+        ref.observe(.childAdded, with: { (snapshot) in
+            let messageId = snapshot.key
+            
+            let messagesReference = Database.database().reference().child("messages").child(messageId)
+            
+            messagesReference.observeSingleEvent(of: .value, with: { (snapshot) in
+                if let dictionary = snapshot.value as? [String: AnyObject] {
+                    let message = Message()
+                    message.fromId = dictionary["fromId"] as? String
+                    message.text = dictionary["text"] as? String
+                    message.timestamp = dictionary["timestamp"] as? String
+                    message.toId = dictionary["toId"] as? String
+                    
+                    if let chatPartnerId = message.chatPartnerId() {
+                        self.messagesDictionary[chatPartnerId] = message
+                        self.messages = Array(self.messagesDictionary.values)
+                        self.messages.sort(by: { (message1, message2) -> Bool in
+                            return Int(message1.timestamp!)! > Int(message2.timestamp!)!
+                        })
+                    }
+                    
+                    self.timer?.invalidate()
+                    self.timer = Timer.scheduledTimer(withTimeInterval: 0.2, repeats: false, block: { (timer) in
+                        DispatchQueue.main.async {
+                            print("reload table data")
+                            self.tableView.reloadData()
+                        }
+                    })
+                }
+            }, withCancel: nil)
+        }, withCancel: nil)
+    }
+    
+    var timer:Timer?
+    
+    @objc func handleReloadTable() {
+        DispatchQueue.main.async {
+            self.tableView.reloadData()
+        }
+    }
+    
+    
     
     func checkIfUserIsLoggedIn() {
         // user not logged in
@@ -42,7 +97,7 @@ class MessagesViewController: UITableViewController {
             return
         }
         
-        self.ref = Database.database().reference()
+        let ref = Database.database().reference()
         ref.child("users").child(uid).observeSingleEvent(of: .value, with: { (snapshot) in
             if let dictionary = snapshot.value as? [String:AnyObject] {
                 let chatUser = ChatUser()
@@ -57,7 +112,11 @@ class MessagesViewController: UITableViewController {
     }
     
     func setupNavBarWithUser(chatUser: ChatUser) {
-        //self.navigationItem.title = chatUser.name
+        messages.removeAll()
+        messagesDictionary.removeAll()
+        self.tableView.reloadData()
+        
+        observeUserMessages()
         
         let titleView = UIView()
         titleView.frame = CGRect(x: 0, y: 0, width: 100, height: 40)
@@ -73,6 +132,7 @@ class MessagesViewController: UITableViewController {
         profileImageView.contentMode = .scaleAspectFill
         profileImageView.layer.cornerRadius = 20
         profileImageView.layer.masksToBounds = true
+        
         
         if let profileImageUrl = chatUser.profileImageUrl {
             profileImageView.loadImageUsingCacheWithUrlString(urlString: profileImageUrl)
@@ -100,7 +160,19 @@ class MessagesViewController: UITableViewController {
         containerView.centerXAnchor.constraint(equalTo: titleView.centerXAnchor).isActive = true
         containerView.centerYAnchor.constraint(equalTo: titleView.centerYAnchor).isActive = true
         
+        /*let tap = UITapGestureRecognizer(target: self, action: #selector(showChatController))
+        self.view.addGestureRecognizer(tap)*/
+        
+        
         self.navigationItem.titleView = titleView
+        
+        
+    }
+    
+    func showChatControllerForUser(chatUser: ChatUser) {
+        let chatLogController = ChatLogController(collectionViewLayout: UICollectionViewFlowLayout())
+        chatLogController.chatUser = chatUser
+        self.navigationController?.pushViewController(chatLogController, animated: true)
     }
 
     @objc func handleLogout() {
@@ -116,8 +188,52 @@ class MessagesViewController: UITableViewController {
     
     @objc func handleNewMessage() {
         let newMessageController = NewMessageController()
+        newMessageController.messagesController = self
         let navController = UINavigationController(rootViewController: newMessageController)
         present(navController, animated: true, completion: nil)
+    }
+    
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return self.messages.count
+    }
+    
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: cellId, for: indexPath) as! UserCell
+        let message = self.messages[indexPath.row]
+        cell.message = message
+        
+        
+        
+        return cell
+    }
+    
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 72
+    }
+    
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let message = messages[indexPath.row]
+        
+        guard let chatPartnerId = message.chatPartnerId() else {
+            return
+        }
+        
+        let ref = Database.database().reference().child("users").child(chatPartnerId)
+        ref.observeSingleEvent(of: .value, with: { (snapshot) in
+            guard let dictionary = snapshot.value as? [String: AnyObject] else {
+                return
+            }
+            
+            let chatUser = ChatUser()
+            chatUser.id = chatPartnerId
+            chatUser.name = dictionary["name"] as? String
+            chatUser.email = dictionary["email"] as? String
+            chatUser.profileImageUrl = dictionary["profileImageUrl"] as? String
+            
+            self.showChatControllerForUser(chatUser: chatUser)
+        }, withCancel: nil)
+        
+        
     }
     
 
