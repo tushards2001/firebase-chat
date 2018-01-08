@@ -24,6 +24,8 @@ class MessagesViewController: UITableViewController, UIGestureRecognizerDelegate
         // new message button
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .edit, target: self, action: #selector(handleNewMessage))
         
+        /*navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "new_message_icon"), style: .plain, target: self, action: #selector(handleNewMessage))*/
+        
         checkIfUserIsLoggedIn()
         
         tableView.register(UserCell.self, forCellReuseIdentifier: cellId)
@@ -55,11 +57,21 @@ class MessagesViewController: UITableViewController, UIGestureRecognizerDelegate
         
         messagesReference.observeSingleEvent(of: .value, with: { (snapshot) in
             if let dictionary = snapshot.value as? [String: AnyObject] {
+                
                 let message = Message()
                 message.fromId = dictionary["fromId"] as? String
-                message.text = dictionary["text"] as? String
-                message.timestamp = dictionary["timestamp"] as? String
                 message.toId = dictionary["toId"] as? String
+                message.text = dictionary["text"] as? String
+                let strTimestamp = dictionary["timestamp"] as? String
+                message.timestamp = NSNumber(value: Int(strTimestamp!)!)
+                
+                message.imageUrl = dictionary["imageUrl"] as? String
+                message.imageWidth = dictionary["imageWidth"] as? NSNumber
+                message.imageHeight = dictionary["imageHeight"] as? NSNumber
+                
+                if let timestamp = message.timestamp {
+                    print(timestamp)
+                }
                 
                 if let chatPartnerId = message.chatPartnerId() {
                     self.messagesDictionary[chatPartnerId] = message
@@ -76,7 +88,8 @@ class MessagesViewController: UITableViewController, UIGestureRecognizerDelegate
             DispatchQueue.main.async {
                 self.messages = Array(self.messagesDictionary.values)
                 self.messages.sort(by: { (message1, message2) -> Bool in
-                    return Int(message1.timestamp!)! > Int(message2.timestamp!)!
+                    //return Int(message1.timestamp!)! > Int(message2.timestamp!)!
+                    return message1.timestamp!.intValue > message2.timestamp!.intValue
                 })
                 
                 print("reload table data")

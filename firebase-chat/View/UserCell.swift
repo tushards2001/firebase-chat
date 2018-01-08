@@ -16,15 +16,34 @@ class UserCell: UITableViewCell {
         didSet {
             setupNameAndProfileImage()
             
-            self.detailTextLabel?.text = self.message?.text!
-            
-            if let seconds = Int(self.message!.timestamp!) {
-                let timestampDate = NSDate(timeIntervalSince1970: TimeInterval(seconds))
+            if let text = self.message?.text {
+                self.detailTextLabel?.text = text
                 
-                let dateFormatter = DateFormatter()
-                dateFormatter.dateFormat = "hh:mm:ss a"
-                self.timeLabel.text = dateFormatter.string(from: timestampDate as Date)
+                /*if let seconds = Int(self.message!.timestamp!) {
+                    let timestampDate = NSDate(timeIntervalSince1970: TimeInterval(seconds))
+                    
+                    let dateFormatter = DateFormatter()
+                    dateFormatter.dateFormat = "hh:mm:ss a"
+                    self.timeLabel.text = dateFormatter.string(from: timestampDate as Date)
+                }*/
+                
+                if let seconds = self.message?.timestamp {
+                    let timestampDate = NSDate(timeIntervalSince1970: TimeInterval(truncating: seconds))
+                    let dateFormatter = DateFormatter()
+                    dateFormatter.dateFormat = "hh:mm:ss a"
+                    self.timeLabel.text = dateFormatter.string(from: timestampDate as Date)
+                }
+            } else if self.message?.imageUrl != nil {
+                self.detailTextLabel?.text = "Image"
+                
+                if let seconds = self.message?.timestamp {
+                    let timestampDate = NSDate(timeIntervalSince1970: TimeInterval(truncating: seconds))
+                    let dateFormatter = DateFormatter()
+                    dateFormatter.dateFormat = "hh:mm:ss a"
+                    self.timeLabel.text = dateFormatter.string(from: timestampDate as Date)
+                }
             }
+            
         }
     }
     

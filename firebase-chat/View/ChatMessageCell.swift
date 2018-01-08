@@ -19,6 +19,7 @@ class ChatMessageCell: UICollectionViewCell {
         tv.font = UIFont.systemFont(ofSize: 16)
         tv.textColor = UIColor.white
         tv.backgroundColor = UIColor.clear
+        tv.isEditable = false
         return tv
     }()
     
@@ -42,6 +43,16 @@ class ChatMessageCell: UICollectionViewCell {
         imageView.layer.cornerRadius = 16
         imageView.layer.masksToBounds = true
         imageView.contentMode = .scaleAspectFill
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        return imageView
+    }()
+    
+    let messageImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.layer.cornerRadius = 16
+        imageView.layer.masksToBounds = true
+        imageView.contentMode = .scaleAspectFill
+        imageView.backgroundColor = UIColor.lightGray
         imageView.translatesAutoresizingMaskIntoConstraints = false
         return imageView
     }()
@@ -79,7 +90,13 @@ class ChatMessageCell: UICollectionViewCell {
         textView.heightAnchor.constraint(equalTo: self.heightAnchor).isActive = true
         
         
+        bubbleView.addSubview(messageImageView)
         
+        // x, y, width, height constraints
+        messageImageView.leftAnchor.constraint(equalTo: bubbleView.leftAnchor).isActive = true
+        messageImageView.topAnchor.constraint(equalTo: bubbleView.topAnchor).isActive = true
+        messageImageView.widthAnchor.constraint(equalTo: bubbleView.widthAnchor).isActive = true
+        messageImageView.heightAnchor.constraint(equalTo: bubbleView.heightAnchor).isActive = true
     }
     
     required init?(coder aDecoder: NSCoder) {
