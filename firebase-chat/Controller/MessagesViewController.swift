@@ -40,45 +40,58 @@ class MessagesViewController: UITableViewController, UIGestureRecognizerDelegate
         let ref = Database.database().reference().child("user-messages").child(uid)
         
         ref.observe(.childAdded, with: { (snapshot) in
-            let messageId = snapshot.key
+            let userId = snapshot.key
             
-            let messagesReference = Database.database().reference().child("messages").child(messageId)
-            
-            messagesReference.observeSingleEvent(of: .value, with: { (snapshot) in
-                if let dictionary = snapshot.value as? [String: AnyObject] {
-                    let message = Message()
-                    message.fromId = dictionary["fromId"] as? String
-                    message.text = dictionary["text"] as? String
-                    message.timestamp = dictionary["timestamp"] as? String
-                    message.toId = dictionary["toId"] as? String
-                    
-                    if let chatPartnerId = message.chatPartnerId() {
-                        self.messagesDictionary[chatPartnerId] = message
-                        self.messages = Array(self.messagesDictionary.values)
-                        self.messages.sort(by: { (message1, message2) -> Bool in
-                            return Int(message1.timestamp!)! > Int(message2.timestamp!)!
-                        })
-                    }
-                    
-                    self.timer?.invalidate()
-                    self.timer = Timer.scheduledTimer(withTimeInterval: 0.2, repeats: false, block: { (timer) in
-                        DispatchQueue.main.async {
-                            print("reload table data")
-                            self.tableView.reloadData()
-                        }
-                    })
-                }
+            Database.database().reference().child("user-messages").child(uid).child(userId).observe(.childAdded, with: { (snapshot) in
+                let messageId = snapshot.key
+                
+                self.fetchMessageWithMessageId(messageId: messageId)
             }, withCancel: nil)
         }, withCancel: nil)
     }
     
+    private func fetchMessageWithMessageId(messageId: String) {
+        let messagesReference = Database.database().reference().child("messages").child(messageId)
+        
+        messagesReference.observeSingleEvent(of: .value, with: { (snapshot) in
+            if let dictionary = snapshot.value as? [String: AnyObject] {
+                let message = Message()
+                message.fromId = dictionary["fromId"] as? String
+                message.text = dictionary["text"] as? String
+                message.timestamp = dictionary["timestamp"] as? String
+                message.toId = dictionary["toId"] as? String
+                
+                if let chatPartnerId = message.chatPartnerId() {
+                    self.messagesDictionary[chatPartnerId] = message
+                }
+                
+                self.attempReloadOfTable()
+            }
+        }, withCancel: nil)
+    }
+    
+    func attempReloadOfTable() {
+        self.timer?.invalidate()
+        self.timer = Timer.scheduledTimer(withTimeInterval: 0.2, repeats: false, block: { (timer) in
+            DispatchQueue.main.async {
+                self.messages = Array(self.messagesDictionary.values)
+                self.messages.sort(by: { (message1, message2) -> Bool in
+                    return Int(message1.timestamp!)! > Int(message2.timestamp!)!
+                })
+                
+                print("reload table data")
+                self.tableView.reloadData()
+            }
+        })
+    }
+    
     var timer:Timer?
     
-    @objc func handleReloadTable() {
+    /*@objc func handleReloadTable() {
         DispatchQueue.main.async {
             self.tableView.reloadData()
         }
-    }
+    }*/
     
     
     
