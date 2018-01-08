@@ -10,6 +10,8 @@ import UIKit
 
 class ChatMessageCell: UICollectionViewCell {
     
+    var chatLogConroller: ChatLogController?
+    
     static var blueColor = UIColor(red: 0/255, green: 137/255, blue: 249/255, alpha: 1)
     
     let textView: UITextView = {
@@ -47,15 +49,25 @@ class ChatMessageCell: UICollectionViewCell {
         return imageView
     }()
     
-    let messageImageView: UIImageView = {
+    lazy var messageImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.layer.cornerRadius = 16
         imageView.layer.masksToBounds = true
         imageView.contentMode = .scaleAspectFill
         imageView.backgroundColor = UIColor.lightGray
+        imageView.isUserInteractionEnabled = true
+        imageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleZoomTap)))
         imageView.translatesAutoresizingMaskIntoConstraints = false
         return imageView
     }()
+    
+    @objc func handleZoomTap(tapGesture: UITapGestureRecognizer) {
+        if let imageView = tapGesture.view as? UIImageView {
+            self.chatLogConroller?.performZoomInForStartingImageView(startingImageView: imageView)
+        }
+        
+        
+    }
     
     override init(frame: CGRect) {
         super.init(frame: frame)
