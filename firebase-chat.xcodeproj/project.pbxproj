@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		526056C52004EE39005BD4BE /* ChatInputContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526056C42004EE39005BD4BE /* ChatInputContainerView.swift */; };
 		527E71A21FFCFAEB000B1334 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 527E71A11FFCFAEB000B1334 /* Extensions.swift */; };
 		527E71A41FFD1157000B1334 /* ChatLogController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 527E71A31FFD1157000B1334 /* ChatLogController.swift */; };
 		52A8B09E1FFF8E1B00E80598 /* ChatMessageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52A8B09D1FFF8E1B00E80598 /* ChatMessageCell.swift */; };
@@ -26,6 +27,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		526056C42004EE39005BD4BE /* ChatInputContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatInputContainerView.swift; sourceTree = "<group>"; };
 		527E71A11FFCFAEB000B1334 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		527E71A31FFD1157000B1334 /* ChatLogController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatLogController.swift; sourceTree = "<group>"; };
 		52A8B09D1FFF8E1B00E80598 /* ChatMessageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMessageCell.swift; sourceTree = "<group>"; };
@@ -129,6 +131,7 @@
 			children = (
 				52C3BCCA1FFE4F5000F300C3 /* UserCell.swift */,
 				52A8B09D1FFF8E1B00E80598 /* ChatMessageCell.swift */,
+				526056C42004EE39005BD4BE /* ChatInputContainerView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -287,6 +290,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				527E71A41FFD1157000B1334 /* ChatLogController.swift in Sources */,
+				526056C52004EE39005BD4BE /* ChatInputContainerView.swift in Sources */,
 				52B39C031FF3E3CF002E51BC /* LoginController+Handlers.swift in Sources */,
 				52B39BFE1FF3D957002E51BC /* NewMessageController.swift in Sources */,
 				52C3BCC81FFE475100F300C3 /* Message.swift in Sources */,

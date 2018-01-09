@@ -29,6 +29,8 @@ class MessagesViewController: UITableViewController, UIGestureRecognizerDelegate
         checkIfUserIsLoggedIn()
         
         tableView.register(UserCell.self, forCellReuseIdentifier: cellId)
+        
+        tableView.allowsSelectionDuringEditing = true
     }
     
     var messages = [Message]()
@@ -49,6 +51,11 @@ class MessagesViewController: UITableViewController, UIGestureRecognizerDelegate
                 
                 self.fetchMessageWithMessageId(messageId: messageId)
             }, withCancel: nil)
+        }, withCancel: nil)
+        
+        ref.observe(.childRemoved, with: { (snapshot) in
+            self.messagesDictionary.removeValue(forKey: snapshot.key)
+            self.attempReloadOfTable()
         }, withCancel: nil)
     }
     
@@ -257,6 +264,31 @@ class MessagesViewController: UITableViewController, UIGestureRecognizerDelegate
             self.showChatControllerForUser(chatUser: chatUser)
         }, withCancel: nil)
         
+        
+    }
+    
+    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        return true
+    }
+    
+    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+        guard let uid = Auth.auth().currentUser?.uid else {
+            return
+        }
+        
+        let message = self.messages[indexPath.row]
+        
+        if let chatPartnerId = message.chatPartnerId() {
+            Database.database().reference().child("user-messages").child(uid).child(chatPartnerId).removeValue(completionBlock: { (error, ref) in
+                if error != nil {
+                    print("Failed to delete message:", error!)
+                    return
+                }
+                
+                self.messagesDictionary.removeValue(forKey: chatPartnerId)
+                self.attempReloadOfTable()
+            })
+        }
         
     }
     
