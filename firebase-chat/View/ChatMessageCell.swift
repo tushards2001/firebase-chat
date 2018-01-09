@@ -7,10 +7,12 @@
 //
 
 import UIKit
+import AVFoundation
 
 class ChatMessageCell: UICollectionViewCell {
     
     var chatLogConroller: ChatLogController?
+    var message: Message?
     
     static var blueColor = UIColor(red: 0/255, green: 137/255, blue: 249/255, alpha: 1)
     
@@ -23,6 +25,13 @@ class ChatMessageCell: UICollectionViewCell {
         tv.backgroundColor = UIColor.clear
         tv.isEditable = false
         return tv
+    }()
+    
+    let activityIndicatorView: UIActivityIndicatorView = {
+        let aiv = UIActivityIndicatorView(activityIndicatorStyle: .whiteLarge)
+        aiv.translatesAutoresizingMaskIntoConstraints = false
+        aiv.hidesWhenStopped = true
+        return aiv
     }()
     
     
@@ -49,6 +58,43 @@ class ChatMessageCell: UICollectionViewCell {
         return imageView
     }()
     
+    lazy var playButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.tintColor = UIColor.white
+        button.translatesAutoresizingMaskIntoConstraints = false
+        let image = UIImage(named: "play")
+        button.setImage(image, for: .normal)
+        button.addTarget(self, action: #selector(handlePlay), for: .touchUpInside)
+        return button
+    }()
+    
+    var playerLayer: AVPlayerLayer?
+    var player: AVPlayer?
+    
+    @objc func handlePlay() {
+        if let videoUrlString = self.message?.videoUrl, let url = URL(string: videoUrlString) {
+            player = AVPlayer(url: url)
+            
+            playerLayer = AVPlayerLayer(player: player)
+            playerLayer?.frame = bubbleView.bounds
+            bubbleView.layer.addSublayer(playerLayer!)
+            
+            player?.play()
+            
+            activityIndicatorView.startAnimating()
+            playButton.isHidden = true
+            print("Attempting to play video")
+        }
+        
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        playerLayer?.removeFromSuperlayer()
+        player?.pause()
+        activityIndicatorView.stopAnimating()
+    }
+    
     lazy var messageImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.layer.cornerRadius = 16
@@ -62,6 +108,10 @@ class ChatMessageCell: UICollectionViewCell {
     }()
     
     @objc func handleZoomTap(tapGesture: UITapGestureRecognizer) {
+        if message?.videoUrl != nil {
+            return
+        }
+        
         if let imageView = tapGesture.view as? UIImageView {
             self.chatLogConroller?.performZoomInForStartingImageView(startingImageView: imageView)
         }
@@ -109,6 +159,25 @@ class ChatMessageCell: UICollectionViewCell {
         messageImageView.topAnchor.constraint(equalTo: bubbleView.topAnchor).isActive = true
         messageImageView.widthAnchor.constraint(equalTo: bubbleView.widthAnchor).isActive = true
         messageImageView.heightAnchor.constraint(equalTo: bubbleView.heightAnchor).isActive = true
+        
+        
+        bubbleView.addSubview(playButton)
+        
+        // x, y, width, height constraints
+        playButton.centerXAnchor.constraint(equalTo: bubbleView.centerXAnchor).isActive = true
+        playButton.centerYAnchor.constraint(equalTo: bubbleView.centerYAnchor).isActive = true
+        playButton.widthAnchor.constraint(equalToConstant: 44).isActive = true
+        playButton.heightAnchor.constraint(equalToConstant: 44).isActive = true
+        
+        
+        bubbleView.addSubview(activityIndicatorView)
+        
+        // x, y, width, height constraints
+        activityIndicatorView.centerXAnchor.constraint(equalTo: bubbleView.centerXAnchor).isActive = true
+        activityIndicatorView.centerYAnchor.constraint(equalTo: bubbleView.centerYAnchor).isActive = true
+        activityIndicatorView.widthAnchor.constraint(equalToConstant: 44).isActive = true
+        activityIndicatorView.heightAnchor.constraint(equalToConstant: 44).isActive = true
+        
     }
     
     required init?(coder aDecoder: NSCoder) {

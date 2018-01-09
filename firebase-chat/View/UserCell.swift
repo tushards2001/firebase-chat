@@ -42,6 +42,15 @@ class UserCell: UITableViewCell {
                     dateFormatter.dateFormat = "hh:mm:ss a"
                     self.timeLabel.text = dateFormatter.string(from: timestampDate as Date)
                 }
+            } else if self.message?.videoUrl != nil {
+                self.detailTextLabel?.text = "Video"
+                
+                if let seconds = self.message?.timestamp {
+                    let timestampDate = NSDate(timeIntervalSince1970: TimeInterval(truncating: seconds))
+                    let dateFormatter = DateFormatter()
+                    dateFormatter.dateFormat = "hh:mm:ss a"
+                    self.timeLabel.text = dateFormatter.string(from: timestampDate as Date)
+                }
             }
             
         }

@@ -20,6 +20,8 @@ class Message: NSObject {
     var imageWidth: NSNumber?
     var imageHeight: NSNumber?
     
+    var videoUrl: String?
+    
     /*init(dictionary:[String: AnyObject]) {
         super.init()
         print(dictionary["timestamp"]!)

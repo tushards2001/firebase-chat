@@ -68,10 +68,8 @@ class MessagesViewController: UITableViewController, UIGestureRecognizerDelegate
                 message.imageUrl = dictionary["imageUrl"] as? String
                 message.imageWidth = dictionary["imageWidth"] as? NSNumber
                 message.imageHeight = dictionary["imageHeight"] as? NSNumber
+                message.videoUrl = dictionary["videoUrl"] as? String
                 
-                if let timestamp = message.timestamp {
-                    print(timestamp)
-                }
                 
                 if let chatPartnerId = message.chatPartnerId() {
                     self.messagesDictionary[chatPartnerId] = message
